@@ -1,0 +1,24 @@
+#dependencies  
+import random
+from time import sleep    
+import requests
+import logging
+import json
+from dapr.clients import DaprClient
+
+#code
+logging.basicConfig(level = logging.INFO)
+while True:
+    sleep(random.randrange(50, 5000) / 1000)
+    orderId = random.randint(1, 1000)
+    PUBSUB_NAME = 'order-pub-sub'
+    TOPIC_NAME = 'orders'
+    with DaprClient() as client:
+        #Using Dapr SDK to publish a topic
+        result = client.publish_event(
+            pubsub_name=PUBSUB_NAME,
+            topic_name=TOPIC_NAME,
+            data=json.dumps(orderId),
+            data_content_type='application/json',
+        )
+    logging.info('Published data: ' + str(orderId))
